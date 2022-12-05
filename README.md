@@ -1,14 +1,20 @@
 True inversion of 8, 16 or 32-bit greyscale, and RGB color images - not just inverting LUT
 
-i.e. not just inverting LUT so the image appears black-on-white rather than white on black
-this re-writes the pixel values, so that 0 becomes 255, 1 becomes 254 etc. (example for 8 bit greyscale)
+i.e. not just inverting LUT so the image *appears* black-on-white rather than white on black.  
+This plu-in re-writes the pixel values, so that 0 becomes 255, 1 becomes 254 etc. (example for 8 bit greyscale)
 
 for RGB colour images;
+
   Red   [ 255,  0 ,  0  ] -> Cyan    [  0 , 255, 255 ];
+	
   Green [  0 , 255,  0  ] -> Magenta [ 255,  0 , 255 ];
+	
   Blue  [  0 ,  0 , 255 ] -> Yellow  [ 255, 255,  0  ];
+	
   Black [  0 ,  0 ,  0  ] -> White   [ 255, 255, 255 ];
+	
   White [ 255, 255, 255 ] -> Black   [  0 ,  0 ,  0  ];
+	
 
 This is useful for numerical edge finding codes for thresholded images:
 Typically for a shadowgraph image, raw image has a black object of interest on a white background.
@@ -29,11 +35,10 @@ But the normal global theresholding method, depending of your selection of "Dark
 just makes it an Inverting LUT, or not: i.e. whether 0 is displayed as white or black.
 
 Additionally, for some of the advanced codes with density determination to get sub-pixel resolution of an edge,
-and where the opacity of the object may differ at different places in the image. Especially, a very thin 
+I needed a 16-bit true invert, not just a black-white swap on a tyhresholded image.  
+Where the opacity of the object may differ at different places in the image. Especially, a very thin 
 clear liquid filament, in not perfect telecentric illumination and lensing, may go very light near the point of
 break, a few pixel width or below, in which case even local thresholding methods are unreliable.
-
-For those methods, I needed a 16-bit truie invert, not justa black-white swap on a tyhresholded image.
 
 Based on Johannes Schindelin's plugin tutorial template for processing each pixel of either
 GRAY8, GRAY16, GRAY32 or COLOR_RGB images.
