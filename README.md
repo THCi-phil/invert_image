@@ -1,84 +1,44 @@
-This is an example Maven project implementing an ImageJ 1.x plugin.
+True inversion of 8, 16 or 32-bit greyscale, and RGB color images - not just inverting LUT
 
-For an example Maven project implementing an **ImageJ2 command**, see:
-    https://github.com/imagej/example-imagej2-command
+i.e. not just inverting LUT so the image appears black-on-white rather than white on black
+this re-writes the pixel values, so that 0 becomes 255, 1 becomes 254 etc. (example for 8 bit greyscale)
 
-It is intended as an ideal starting point to develop new ImageJ 1.x plugins
-in an IDE of your choice. You can even collaborate with developers using a
-different IDE than you.
+for RGB colour images;
+  Red   [ 255,  0 ,  0  ] -> Cyan    [  0 , 255, 255 ];
+  Green [  0 , 255,  0  ] -> Magenta [ 255,  0 , 255 ];
+  Blue  [  0 ,  0 , 255 ] -> Yellow  [ 255, 255,  0  ];
+  Black [  0 ,  0 ,  0  ] -> White   [ 255, 255, 255 ];
+  White [ 255, 255, 255 ] -> Black   [  0 ,  0 ,  0  ];
 
-* In [Eclipse](http://eclipse.org), for example, it is as simple as
-  _File &#8250; Import... &#8250; Existing Maven Project_.
+This is useful for numerical edge finding codes for thresholded images:
+Typically for a shadowgraph image, raw image has a black object of interest on a white background.
+(or more normally in high speed imaging, a dark grey object on a light grey background).
+First step in image processing is normally finding the difference from a blank reference background
+image, to improve the signal to noise ratio, but the result of that difference is typically near 0
+where there is background in your image and near 255 where there is the shadowgraphed object of interest.
+i.e the image with the background difference removed, has become a negative, a white object on a black background.
+This is a pain if we sometimes have images where we remove the background, and sometimes don't,
+because we need 2 different versions of the numerical edsge finding code, one for black-on-white
+thresholds, one for white-on-black.
 
-* In [NetBeans](http://netbeans.org), it is even simpler:
-  _File &#8250; Open Project_.
+So for numerical codes I run, I want background white to be pixel value 255, and object black to be 0
 
-* The same works in [IntelliJ](http://jetbrains.net).
+Auto local threshold methods do this, depending of your selection of "White objects on black background"
 
-* If [jEdit](http://jedit.org) is your preferred IDE, you will need the
-  [Maven Plugin](http://plugins.jedit.org/plugins/?MavenPlugin).
+But the normal global theresholding method, depending of your selection of "Dark background",
+just makes it an Inverting LUT, or not: i.e. whether 0 is displayed as white or black.
 
-Die-hard command-line developers can use Maven directly by calling `mvn`
-in the project root.
+Additionally, for some of the advanced codes with density determination to get sub-pixel resolution of an edge,
+and where the opacity of the object may differ at different places in the image. Especially, a very thin 
+clear liquid filament, in not perfect telecentric illumination and lensing, may go very light near the point of
+break, a few pixel width or below, in which case even local thresholding methods are unreliable.
 
-However you build the project, in the end you will have the `.jar` file
-(called *artifact* in Maven speak) in the `target/` subdirectory.
+For those methods, I needed a 16-bit truie invert, not justa black-white swap on a tyhresholded image.
 
-To copy the artifact into the correct place, you can call
-`mvn -Dscijava.app.directory=/path/to/ImageJ.app/`.
-This will not only copy your artifact, but also all the dependencies. Restart
-your ImageJ or call *Help &#8250; Refresh Menus* to see your plugin in the menus.
+Based on Johannes Schindelin's plugin tutorial template for processing each pixel of either
+GRAY8, GRAY16, GRAY32 or COLOR_RGB images.
 
-Developing plugins in an IDE is convenient, especially for debugging. To
-that end, the plugin contains a `main` method which sets the `plugins.dir`
-system property (so that the plugin is added to the Plugins menu), starts
-ImageJ, loads an image and runs the plugin. See also
-[this page](https://imagej.net/Debugging#Debugging_plugins_in_an_IDE_.28Netbeans.2C_IntelliJ.2C_Eclipse.2C_etc.29)
-for information how ImageJ makes it easier to debug in IDEs.
+And for COLOR_RGB, acknowledging Kieren Holland's RGB_Recolor as a useful exemplar of use of the ColorProcessor class
 
-Since this project is intended as a starting point for your own
-developments, it is in the public domain.
 
-How to use this project as a starting point
-===========================================
-
-1. Visit [this link](https://github.com/imagej/example-legacy-plugin/generate)
-   to create a new repository in your space using this one as a template.
-
-2. [Clone your new repository](https://help.github.com/en/articles/cloning-a-repository).
-
-3. Edit the `pom.xml` file. Every entry should be pretty self-explanatory.
-   In particular, change
-    1. the *artifactId* (**NOTE**: should contain a '_' character)
-    2. the *groupId*, ideally to a reverse domain name your organization owns
-    3. the *version* (note that you typically want to use a version number
-       ending in *-SNAPSHOT* to mark it as a work in progress rather than a
-       final version)
-    4. the *dependencies* (read how to specify the correct
-       *groupId/artifactId/version* triplet
-       [here](https://imagej.net/Maven#How_to_find_a_dependency.27s_groupId.2FartifactId.2Fversion_.28GAV.29.3F))
-    5. the *developer* information
-    6. the *scm* information
-
-4. Remove the `Process_Pixels.java` file and add your own `.java` files
-   to `src/main/java/<package>/` (if you need supporting files -- like icons
-   -- in the resulting `.jar` file, put them into `src/main/resources/`)
-
-5. Edit `src/main/resources/plugins.config`
-
-6. Replace the contents of `README.md` with information about your project.
-
-7. Make your initial
-   [commit](https://help.github.com/en/desktop/contributing-to-projects/committing-and-reviewing-changes-to-your-project) and
-   [push the results](https://help.github.com/en/articles/pushing-commits-to-a-remote-repository)!
-
-### Eclipse: To ensure that Maven copies the plugin to your ImageJ folder
-
-1. Go to _Run Configurations..._
-2. Choose _Maven Build_
-3. Add the following parameter:
-    - name: `scijava.app.directory`
-    - value: `/path/to/ImageJ.app/`
-
-This ensures that the final `.jar` file will also be copied to
-your ImageJ plugins folder everytime you run the Maven build.
+Public domain, copyright Prof Phil Threlfall-Holmes, TH Collaborative Innovation, 2022
