@@ -14,9 +14,9 @@ package com.pthci.imagej;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
+import ij.process.ColorProcessor;
 
 /**
  * True invert greyscale of 8-bit, 16-bit, or 32-bit greyscale image, or a color RGB image.
@@ -104,7 +104,8 @@ public class Invert_Image implements PlugInFilter {
 		if      (type == ImagePlus.GRAY8)       process( (byte[])  ip.getPixels() );
 		else if (type == ImagePlus.GRAY16)		process( (short[]) ip.getPixels() );
 		else if (type == ImagePlus.GRAY32)		process( (float[]) ip.getPixels() );
-		else if (type == ImagePlus.COLOR_RGB)	process( (int[])   ip.getPixels() );
+		else if (type == ImagePlus.COLOR_RGB)   process( (int[])   ip.getPixels() );
+		                                     // processTestRGB(int[] pixels, ImageProcessor ip )                                
 		else {
 			throw new RuntimeException("not supported");
 		}
@@ -165,19 +166,121 @@ public class Invert_Image implements PlugInFilter {
 
 
 	// processing of COLOR_RGB images
-	public void process(int[] pixels) {
-		IJ.log("public void process RGB");
-/*	
-			for (int x=0; x < width; x++) {
-				// process each pixel of the line
-				// example: add 'number' to each pixel
-				pixels[x + y * width] += (int)value;
-			}
+	public void process(int[] pixels ) {
+		//IJ.log("public void process RGB");
+		//Red   [ 255,  0 ,  0  ] -> Cyan    [  0 , 255, 255 ];
+		//Green [  0 , 255,  0  ] -> Magenta [ 255,  0 , 255 ];
+		//Blue  [  0 ,  0 , 255 ] -> Yellow  [ 255, 255,  0  ];
+		//Black [  0 ,  0 ,  0  ] -> White   [ 255, 255, 255 ];
+		//White [ 255, 255, 255 ] -> Black   [  0 ,  0 ,  0  ];
+		
+		ColorProcessor cp = new ColorProcessor(width, height, pixels);
+		
+		byte[] R = new byte[ width*height ];
+		byte[] G = new byte[ width*height ];
+		byte[] B = new byte[ width*height ];
+		
+		cp.getRGB( R, G, B);
+
+		for( int pixelPos=0; pixelPos<(width*height); pixelPos++ ) {
+			R[pixelPos] = (byte)( (int)255- (R[pixelPos] & 0xff ) ) ;
+			G[pixelPos] = (byte)( (int)255- (G[pixelPos] & 0xff ) ) ;
+			B[pixelPos] = (byte)( (int)255- (B[pixelPos] & 0xff ) ) ;
 		}
-*/		
+		
+		cp.setRGB( R, G, B );
+
 	} //end public void process(int[] pixels)
   //-----------------------------------------------------
 
+	
+	public void processTestRGB(int[] pixels, ImageProcessor ip ) {
+		IJ.log("public void process RGB");
+		//expect hex representation of colour as #RRGGBB
+		//where RR (red), GG (green) and BB (blue) are hexadecimal integers between 00 and FF specifying the intensity of the color.
+		//  e.g.  #0000FF is blue, because the blue component is set to its highest value (FF) and the others are set to 00.		
+		int r ;
+		int g ;
+		int b ;
+		r= ip.getPixel( 0, 0 ); ;
+		IJ.log( "pixel at [0,0] (expected Red) is value " + r ); 
+		
+		r= ip.getPixel( width-1, 0 ); ;
+		IJ.log( "pixel at [width,0] (expected Green) is value " + r ); 
+		
+		r= ip.getPixel( 0, height-1 ); ;
+		IJ.log( "pixel at [0,height] (expected Blue) is value " + r ); 
+		
+		r= ip.getPixel( width/2, height/2 ); ;
+		IJ.log( "pixel at centre (expected white) is value " + r ); 
+		
+		r= ip.getPixel( width-1, height-1 ); ;
+		IJ.log( "pixel at [width, height] (expected black) is value " + r ); 
+		
+		ColorProcessor cp = new ColorProcessor(width, height, pixels);
+		
+		byte[] R = new byte[ width*height ];
+		byte[] G = new byte[ width*height ];
+		byte[] B = new byte[ width*height ];
+		
+		cp.getRGB( R, G, B);
+		
+		int pixelPos;
+		
+		int x = 50 ;
+		int y = 50 ; 
+		
+		pixelPos = x + y * width;
+		r= R[pixelPos] & 0xff;
+		g =G[pixelPos] & 0xff;
+	    b =B[pixelPos] & 0xff;
+		IJ.log( "pixel at R[50,50] (expected Red) is value R=" + r + ", G=" + g + "B=, " + b ); 
+		
+		x=  width-1 ;
+		y = 0       ; 
+		pixelPos = x + y * width;
+		r= R[pixelPos] & 0xff;
+		g =G[pixelPos] & 0xff;
+	    b =B[pixelPos] & 0xff;
+		IJ.log( "pixel at [width,0] (expected Green) is value R=" + r + ", G=" + g + "B=, " + b ); 
+
+		x= 0       ; 
+		y = height-1 ; 
+		pixelPos = x + y * width;
+		r= R[pixelPos] & 0xff;
+		g =G[pixelPos] & 0xff;
+	    b =B[pixelPos] & 0xff;
+		IJ.log( "pixel at [0,height] (expected Blue) is value  R=" + r + ", G=" + g + "B=, " + b );  		
+		
+		x= width/2 ; 
+		y = height/2 ; 
+		pixelPos = x + y * width;
+		r= R[pixelPos] & 0xff;
+		g =G[pixelPos] & 0xff;
+	    b =B[pixelPos] & 0xff;
+		IJ.log( "pixel at centre (expected White) is value  R=" + r + ", G=" + g + "B=, " + b );  	
+		
+		x= width-1; 
+		y = height-1 ; 
+		pixelPos = x + y * width;
+		r= R[pixelPos] & 0xff;
+		g =G[pixelPos] & 0xff;
+	    b =B[pixelPos] & 0xff;
+		IJ.log( "pixel at centre [width, height] is value  R=" + r + ", G=" + g + "B=, " + b );  		
+		
+		for( pixelPos=0; pixelPos<(width*height); pixelPos++ ) {
+			R[pixelPos] = (byte)( (int)255- (R[pixelPos] & 0xff ) ) ;
+			G[pixelPos] = (byte)( (int)255- (G[pixelPos] & 0xff ) ) ;
+			B[pixelPos] = (byte)( (int)255- (B[pixelPos] & 0xff ) ) ;
+		}
+		
+		cp.setRGB( R, G, B );
+
+	} //end public void processTestRGB(int[] pixels, ImageProcessor ip )
+  //-----------------------------------------------------	
+	
+	
+	
 
 /*=================================================================================*/
 
@@ -213,8 +316,8 @@ public class Invert_Image implements PlugInFilter {
 
 		//ImagePlus image = IJ.openImage("d:/CaBER example.tif");
 		//ImagePlus image = IJ.openImage("d:/test16bitBandWinvert.tif");
-		ImagePlus image = IJ.openImage("d:/test32bitBandWinvert.tif");
-		
+		//ImagePlus image = IJ.openImage("d:/test32bitBandWinvert.tif");
+		ImagePlus image = IJ.openImage("d:/testRGB.tif");
 		
 		// open the Clown sample
 		//ImagePlus image = IJ.openImage("http://imagej.net/images/clown.jpg");
