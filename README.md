@@ -24,7 +24,7 @@ image, to improve the signal to noise ratio, but the result of that difference i
 where there is background in your image and near 255 where there is the shadowgraphed object of interest.
 i.e the image with the background difference removed, has become a negative, a white object on a black background.
 This is a pain if we sometimes have images where we remove the background, and sometimes don't,
-because we need 2 different versions of the numerical edsge finding code, one for black-on-white
+because we need 2 different versions of the numerical edge finding code, one for black-on-white
 thresholds, one for white-on-black.
 
 So for numerical codes I run, I want background white to be pixel value 255, and object black to be 0
