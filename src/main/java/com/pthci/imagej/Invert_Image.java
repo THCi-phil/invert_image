@@ -233,7 +233,7 @@ public class Invert_Image implements PlugInFilter {
 		pixelPos = x + y * width;
 		r= R[pixelPos] & 0xff;
 		g =G[pixelPos] & 0xff;
-	    b =B[pixelPos] & 0xff;
+		b =B[pixelPos] & 0xff;
 		IJ.log( "pixel at R[50,50] (expected Red) is value R=" + r + ", G=" + g + "B=, " + b ); 
 		
 		x=  width-1 ;
@@ -241,7 +241,7 @@ public class Invert_Image implements PlugInFilter {
 		pixelPos = x + y * width;
 		r= R[pixelPos] & 0xff;
 		g =G[pixelPos] & 0xff;
-	    b =B[pixelPos] & 0xff;
+		b =B[pixelPos] & 0xff;
 		IJ.log( "pixel at [width,0] (expected Green) is value R=" + r + ", G=" + g + "B=, " + b ); 
 
 		x= 0       ; 
@@ -249,7 +249,7 @@ public class Invert_Image implements PlugInFilter {
 		pixelPos = x + y * width;
 		r= R[pixelPos] & 0xff;
 		g =G[pixelPos] & 0xff;
-	    b =B[pixelPos] & 0xff;
+		b =B[pixelPos] & 0xff;
 		IJ.log( "pixel at [0,height] (expected Blue) is value  R=" + r + ", G=" + g + "B=, " + b );  		
 		
 		x= width/2 ; 
@@ -257,7 +257,7 @@ public class Invert_Image implements PlugInFilter {
 		pixelPos = x + y * width;
 		r= R[pixelPos] & 0xff;
 		g =G[pixelPos] & 0xff;
-	    b =B[pixelPos] & 0xff;
+		b =B[pixelPos] & 0xff;
 		IJ.log( "pixel at centre (expected White) is value  R=" + r + ", G=" + g + "B=, " + b );  	
 		
 		x= width-1; 
@@ -265,7 +265,7 @@ public class Invert_Image implements PlugInFilter {
 		pixelPos = x + y * width;
 		r= R[pixelPos] & 0xff;
 		g =G[pixelPos] & 0xff;
-	    b =B[pixelPos] & 0xff;
+		b =B[pixelPos] & 0xff;
 		IJ.log( "pixel at centre [width, height] is value  R=" + r + ", G=" + g + "B=, " + b );  		
 		
 		for( pixelPos=0; pixelPos<(width*height); pixelPos++ ) {
