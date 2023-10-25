@@ -70,7 +70,6 @@ public class Invert_Image implements PlugInFilter {
 	private int height  ;
 	private int type    ;
 	private int nSlices ;
-	private int sizePixelArray ;
 	
 	
 	@Override
@@ -92,7 +91,6 @@ public class Invert_Image implements PlugInFilter {
 		height  = ip.getHeight();
 		type    = image.getType();
 		nSlices = image.getStackSize();
-		sizePixelArray = width*height;
 		process(image);
 		image.updateAndDraw();
 	} //end public void run(ImageProcessor ip)
