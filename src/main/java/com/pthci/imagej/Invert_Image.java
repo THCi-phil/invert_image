@@ -1,12 +1,33 @@
-/*
- * To the extent possible under law, the ImageJ developers have waived
- * all copyright and related or neighboring rights to this tutorial code.
- *
- * See the CC0 1.0 Universal license for details:
- *     http://creativecommons.org/publicdomain/zero/1.0/
-  *
- * Invert_image image code 2022 Prof Phil Threlfall-Holmes, TH Collaborative Innovation
- * modification from tutorial template, licence terms unmodified.
+/* MIT license, with no advertising clause added
+ * Copyright (c) 2023 Prof Phil Threlfall-Holmes, TH Collaborative Innovation
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * 
+ * Except as contained in this notice, the name of Prof Phil Threlfall-Holmes TH Collaborative Innovation
+ * either in whole or in part shall not be used in advertising or otherwise to promote the sale,
+ * use or other dealings in this Software
+ * without prior written authorization from Prof Phil Threlfall-Holmes TH Collaborative Innovation.
+ * 
+ */
+ 
+ /* ver2 update: add status and progress messages for stack
  */
 
 package com.pthci.imagej;
@@ -49,6 +70,7 @@ public class Invert_Image implements PlugInFilter {
 	private int height  ;
 	private int type    ;
 	private int nSlices ;
+	private int sizePixelArray ;
 	
 	
 	@Override
@@ -70,6 +92,7 @@ public class Invert_Image implements PlugInFilter {
 		height  = ip.getHeight();
 		type    = image.getType();
 		nSlices = image.getStackSize();
+		sizePixelArray = width*height;
 		process(image);
 		image.updateAndDraw();
 	} //end public void run(ImageProcessor ip)
@@ -93,23 +116,21 @@ public class Invert_Image implements PlugInFilter {
 	 */
 	public void process(ImagePlus image) {
 		// slice numbers start with 1 for historical reasons
-		for (int i = 1; i <= nSlices; i++)
-			process( image.getStack().getProcessor(i) );
-	} //end public void process(ImagePlus image) 
-	//-----------------------------------------------------
-
-
-	// Select processing method depending on image type
-	public void process(ImageProcessor ip) {
-		if      (type == ImagePlus.GRAY8)       process( (byte[])  ip.getPixels() );
-		else if (type == ImagePlus.GRAY16)		process( (short[]) ip.getPixels() );
-		else if (type == ImagePlus.GRAY32)		process( (float[]) ip.getPixels() );
-		else if (type == ImagePlus.COLOR_RGB)   process( (int[])   ip.getPixels() );
-		                                     // processTestRGB(int[] pixels, ImageProcessor ip )                                
+		if      (type == ImagePlus.GRAY8)     for (int i = 1; i <= nSlices; i++) { showProgress(i); process( (byte[] ) image.getStack().getProcessor(i).getPixels() ); }
+		else if (type == ImagePlus.GRAY16)    for (int i = 1; i <= nSlices; i++) { showProgress(i); process( (short[]) image.getStack().getProcessor(i).getPixels() ); }
+		else if (type == ImagePlus.GRAY32)    for (int i = 1; i <= nSlices; i++) { showProgress(i); process( (float[]) image.getStack().getProcessor(i).getPixels() ); }
+		else if (type == ImagePlus.COLOR_RGB) for (int i = 1; i <= nSlices; i++) { showProgress(i); process( (int[]  ) image.getStack().getProcessor(i).getPixels() ); }
+		                                                                      // processTestRGB(int[] pixels, ImageProcessor ip );
 		else {
 			throw new RuntimeException("not supported");
 		}
-	} //end public void process(ImageProcessor ip)
+	} //end public void process(ImagePlus image) 
+	//-----------------------------------------------------
+
+	public void showProgress(int i) {
+		IJ.showStatus("Inverting: " + i + " / " + nSlices );
+		IJ.showProgress( i, nSlices );
+	}
 	//-----------------------------------------------------
 
 
@@ -313,11 +334,12 @@ public class Invert_Image implements PlugInFilter {
 
 		// start ImageJ
 		new ImageJ();
-
+		
+		ImagePlus image = IJ.openImage("e:/1kf wBkgrd.tif");
 		//ImagePlus image = IJ.openImage("d:/CaBER example.tif");
 		//ImagePlus image = IJ.openImage("d:/test16bitBandWinvert.tif");
 		//ImagePlus image = IJ.openImage("d:/test32bitBandWinvert.tif");
-		ImagePlus image = IJ.openImage("d:/testRGB.tif");
+		//ImagePlus image = IJ.openImage("d:/testRGB.tif");
 		
 		// open the Clown sample
 		//ImagePlus image = IJ.openImage("http://imagej.net/images/clown.jpg");
