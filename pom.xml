@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>31.1.0</version>
+		<version>37.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -26,8 +26,8 @@
 	</organization>
 	<licenses>
 		<license>
-			<name>CC0</name>
-			<url>https://creativecommons.org/publicdomain/zero/1.0/</url>
+			<name>MIT No advertising license</name>
+			<url>https://github.com/THCi-phil/invert_image/blob/main/MIT%20no%20advertising%20license.txt/</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
