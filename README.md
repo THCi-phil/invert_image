@@ -52,4 +52,7 @@ GRAY8, GRAY16, GRAY32 or COLOR_RGB images.
 
 And for COLOR_RGB, acknowledging Kieren Holland's RGB_Recolor as a useful exemplar of use of the ColorProcessor class
 
-
+NOTE: most useful in conjunction with my AutoLevelStack plugin.
+The invert image plugin doesn't re-balance the displayed greyscale,
+so the image will often appear blank white afterwards.
+Running the AutoLevelStack plugin will reset the displayed greyscale range.

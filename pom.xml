@@ -14,7 +14,7 @@
 
 	<groupId>com.pTHCi</groupId>
 	<artifactId>Invert_Image</artifactId>
-	<version>2.0.1-STABLE_RELEASE</version>
+	<version>2.0.2-STABLE_RELEASE</version>
 
 	<name>Invert Image</name>
 	<description>Maven ImageJ 1.x plugin. Invert an 8,16,32-bit greyscale, or colour image</description>

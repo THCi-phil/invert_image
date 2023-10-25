@@ -70,6 +70,7 @@ public class Invert_Image implements PlugInFilter {
 	private int height  ;
 	private int type    ;
 	private int nSlices ;
+	private int sizePixelArray ;
 	
 	
 	@Override
@@ -91,6 +92,7 @@ public class Invert_Image implements PlugInFilter {
 		height  = ip.getHeight();
 		type    = image.getType();
 		nSlices = image.getStackSize();
+		sizePixelArray = width*height;
 		process(image);
 		image.updateAndDraw();
 	} //end public void run(ImageProcessor ip)
@@ -146,7 +148,7 @@ public class Invert_Image implements PlugInFilter {
 		//The & operator promotes to int so doesn't need an explicit cast.
 		//It feels very wasteful promoting to int rather than just bit shifting, but a casual internet search
 		//suggests it is the Java solution.
-		for( int pixelPos=0; pixelPos<(width*height); pixelPos++ ) {
+		for( int pixelPos=0; pixelPos<sizePixelArray; pixelPos++ ) {
 			pixels[pixelPos] = (byte)( (int)255- (pixels[pixelPos] & 0xff ) ) ;
 		}
 	} //end public void process(byte[] pixels)
@@ -159,7 +161,7 @@ public class Invert_Image implements PlugInFilter {
 		//Java int is 32 bit, signed -2,147,483,648 to 2,147,483,647
 		//so we can safely promote to int type for the subtraction
 		//and then cast back to short
-	  for( int pixelPos=0; pixelPos<(width*height); pixelPos++ ) {
+	  for( int pixelPos=0; pixelPos<sizePixelArray; pixelPos++ ) {
 			pixels[pixelPos] = (short)( (int)65535 - (pixels[pixelPos] & 0x00ffff ) ) ;
 		}
 	} //end public void process(short[] pixels)
@@ -177,7 +179,7 @@ public class Invert_Image implements PlugInFilter {
 		//But it is actually implemented by float, 0.0 (black) to 1.0 (white)
 		//float data type is 32 bit
 		//With a float data type, we don't need to cast
-		for( int pixelPos=0; pixelPos<(width*height); pixelPos++ ) {
+		for( int pixelPos=0; pixelPos<sizePixelArray; pixelPos++ ) {
 			pixels[pixelPos] = (float)1.0 - pixels[pixelPos] ;
 		}
 	} //end public void process(float[] pixels)
@@ -195,9 +197,9 @@ public class Invert_Image implements PlugInFilter {
 		
 		ColorProcessor cp = new ColorProcessor(width, height, pixels);
 		
-		byte[] R = new byte[ width*height ];
-		byte[] G = new byte[ width*height ];
-		byte[] B = new byte[ width*height ];
+		byte[] R = new byte[ sizePixelArray ];
+		byte[] G = new byte[ sizePixelArray ];
+		byte[] B = new byte[ sizePixelArray ];
 		
 		cp.getRGB( R, G, B);
 
@@ -238,9 +240,9 @@ public class Invert_Image implements PlugInFilter {
 		
 		ColorProcessor cp = new ColorProcessor(width, height, pixels);
 		
-		byte[] R = new byte[ width*height ];
-		byte[] G = new byte[ width*height ];
-		byte[] B = new byte[ width*height ];
+		byte[] R = new byte[ sizePixelArray ];
+		byte[] G = new byte[ sizePixelArray ];
+		byte[] B = new byte[ sizePixelArray ];
 		
 		cp.getRGB( R, G, B);
 		
